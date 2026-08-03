@@ -1,0 +1,88 @@
+<mujoco model="g1_43dof scene">
+  <include file="g1_29dof_with_hand.xml"/>
+  <!-- Note that the hand model in g1_29dof_with_hand.xml is not stable for simulation. -->
+
+  <statistic center="0 0 0.5" extent="2.0"/>
+
+  <visual>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+    <global azimuth="-130" elevation="-20"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3"
+      markrgb="0.8 0.8 0.8" width="300" height="300"/>
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+    <!-- Colored materials for baskets and matching cubes -->
+    <material name="mat_red" rgba="0.85 0.12 0.12 1"/>
+    <material name="mat_green" rgba="0.12 0.70 0.18 1"/>
+    <material name="mat_blue" rgba="0.15 0.25 0.85 1"/>
+    <material name="mat_table" rgba="0.55 0.40 0.26 1"/>
+  </asset>
+
+  <worldbody>
+    <light pos="0 0 1.5" dir="0 0 -1" directional="true"/>
+    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
+    <!-- Site -->
+    <site name="com_marker" pos="0.1 0 0" size="0.05" rgba="1 0 0 1" type="sphere"/>
+
+    <!-- ==================== Manipulation scene ==================== -->
+    <!-- Robot faces +x, so the table and objects are placed in front (+x). -->
+
+    <!-- Table: static. Top surface at z = 0.76 m, centered at x = 0.55 m. -->
+    <body name="table" pos="0.41 0 0">
+      <geom name="table_top" type="box" size="0.35 0.45 0.02" pos="0 0 0.74" material="mat_table"/>
+      <geom name="table_leg_fl" type="box" size="0.02 0.02 0.36" pos="0.30 0.40 0.36" material="mat_table"/>
+      <geom name="table_leg_fr" type="box" size="0.02 0.02 0.36" pos="0.30 -0.40 0.36" material="mat_table"/>
+      <geom name="table_leg_bl" type="box" size="0.02 0.02 0.36" pos="-0.30 0.40 0.36" material="mat_table"/>
+      <geom name="table_leg_br" type="box" size="0.02 0.02 0.36" pos="-0.30 -0.40 0.36" material="mat_table"/>
+    </body>
+
+    <!-- Baskets: FIXED positions, back row at x = 0.68 m, sitting on the table top (z = 0.76). -->
+    <!-- Each basket is an open-top container (floor + 4 walls). -->
+    <body name="basket_red" pos="0.33 -0.13 0.76">
+      <geom name="basket_red_floor" type="box" size="0.06 0.06 0.005" pos="0 0 0.005" material="mat_red"/>
+      <geom name="basket_red_wpx" type="box" size="0.005 0.06 0.03" pos="0.055 0 0.035" material="mat_red"/>
+      <geom name="basket_red_wnx" type="box" size="0.005 0.06 0.03" pos="-0.055 0 0.035" material="mat_red"/>
+      <geom name="basket_red_wpy" type="box" size="0.06 0.005 0.03" pos="0 0.055 0.035" material="mat_red"/>
+      <geom name="basket_red_wny" type="box" size="0.06 0.005 0.03" pos="0 -0.055 0.035" material="mat_red"/>
+    </body>
+    <body name="basket_green" pos="0.33 0.0 0.76">
+      <geom name="basket_green_floor" type="box" size="0.06 0.06 0.005" pos="0 0 0.005" material="mat_green"/>
+      <geom name="basket_green_wpx" type="box" size="0.005 0.06 0.03" pos="0.055 0 0.035" material="mat_green"/>
+      <geom name="basket_green_wnx" type="box" size="0.005 0.06 0.03" pos="-0.055 0 0.035" material="mat_green"/>
+      <geom name="basket_green_wpy" type="box" size="0.06 0.005 0.03" pos="0 0.055 0.035" material="mat_green"/>
+      <geom name="basket_green_wny" type="box" size="0.06 0.005 0.03" pos="0 -0.055 0.035" material="mat_green"/>
+    </body>
+    <body name="basket_blue" pos="0.33 0.13 0.76">
+      <geom name="basket_blue_floor" type="box" size="0.06 0.06 0.005" pos="0 0 0.005" material="mat_blue"/>
+      <geom name="basket_blue_wpx" type="box" size="0.005 0.06 0.03" pos="0.055 0 0.035" material="mat_blue"/>
+      <geom name="basket_blue_wnx" type="box" size="0.005 0.06 0.03" pos="-0.055 0 0.035" material="mat_blue"/>
+      <geom name="basket_blue_wpy" type="box" size="0.06 0.005 0.03" pos="0 0.055 0.035" material="mat_blue"/>
+      <geom name="basket_blue_wny" type="box" size="0.06 0.005 0.03" pos="0 -0.055 0.035" material="mat_blue"/>
+    </body>
+
+    <!-- Cubes: 7 cm, physical (freejoint), resting on the table (z = 0.795). These -->
+    <!-- start positions are tuned for the robot's arm reach; on every reset the cubes -->
+    <!-- are shuffled across these positions (permutation) + jittered within +/-5 cm. -->
+    <!-- See randomize_cubes. -->
+    <body name="cube_red" pos="0.2 -0.1 0.795">
+      <freejoint name="cube_red_free"/>
+      <geom name="cube_red_geom" type="box" size="0.035 0.035 0.035" material="mat_red"/>
+    </body>
+    <body name="cube_green" pos="0.2 0.0 0.795">
+      <freejoint name="cube_green_free"/>
+      <geom name="cube_green_geom" type="box" size="0.035 0.035 0.035" material="mat_green"/>
+    </body>
+    <body name="cube_blue" pos="0.2 0.1 0.795">
+      <freejoint name="cube_blue_free"/>
+      <geom name="cube_blue_geom" type="box" size="0.035 0.035 0.035" material="mat_blue"/>
+    </body>
+  </worldbody>
+
+  <default>
+    <geom friction="1.0"/>
+  </default>
+</mujoco>

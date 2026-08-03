@@ -1,0 +1,49 @@
+1) how to start sim 
+file path 
+
+cmd 
+
+python run_sim_loop.py \
+    --enable-offscreen \
+    --enable-image-publish \
+    --camera-port 5555 \
+    --env-name default
+
+
+source .venv_teleop/bin/activate
+
+# With visualization (recommended for first run):
+python gear_sonic/scripts/pico_manager_thread_server.py \
+    --manager --vis_smpl --vis_vr3pt
+
+# Without visualization (headless):
+# python gear_sonic/scripts/pico_manager_thread_server.py --manager
+
+
+
+
+
+hen run the MuJoCo simulator with:
+    python gear_sonic/scripts/run_sim_loop.py
+══════════════════════════════════════════════════════════════
+deepansh@modinoid-3:/mnt/drive2/vla_sim_ws/install_scripts$ cd ..
+deepansh@modinoid-3:/mnt/drive2/vla_sim_ws$ source .venv_sim/bin/activate
+(gear_sonic_sim) deepansh@modinoid-3:/mnt/drive2/vla_sim_ws$ ls
+deploy-wbc-on-robot  external_dependencies  gear_sonic  gear_sonic.egg-info  install_scripts
+(gear_sonic_sim) deepansh@modinoid-3:/mnt/drive2/vla_sim_ws$ cd gear_sonic
+(gear_sonic_sim) deepansh@modinoid-3:/mnt/drive2/vla_sim_ws/gear_sonic$ ls
+camera        eval_agent_trl.py  __pycache__                   tests
+config        eval_exp.py        pyproject.toml                train_agent_trl.py
+data          __init__.py        README_manipulation_scene.md  trl
+data_process  isaac_utils        Readme.md                     utils
+envs          notes.txt          scripts                       version.py
+(gear_sonic_sim) deepansh@modinoid-3:/mnt/drive2/vla_sim_ws/gear_sonic$ cd scripts/
+(gear_sonic_sim) deepansh@modinoid-3:/mnt/drive2/vla_sim_ws/gear_sonic/scripts$ ls
+launch_data_collection.py      process_dataset.py    run_data_exporter.py
+launch_inference.py            __pycache__           run_sim_loop.py
+pico_manager_thread_server.py  run_camera_viewer.py  run_vla_inference.py
+(gear_sonic_sim) deepansh@modinoid-3:/mnt/drive2/vla_sim_ws/gear_sonic/scripts$ python run_sim_loop.py \
+    --enable-offscreen \
+    --enable-image-publish \
+    --camera-port 5555 \
+    --env-name default

@@ -1,0 +1,72 @@
+Metadata-Version: 2.4
+Name: gear_sonic
+Version: 0.1.0
+Author: NVIDIA Gear Lab
+License: Apache-2.0
+Classifier: Intended Audience :: Science/Research
+Classifier: Development Status :: 3 - Alpha
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Requires-Python: >=3.10
+Description-Content-Type: text/plain
+Requires-Dist: numpy==1.26.4
+Requires-Dist: scipy==1.15.3
+Requires-Dist: torch>=2.4.0
+Requires-Dist: joblib
+Requires-Dist: tqdm
+Requires-Dist: easydict
+Requires-Dist: loguru
+Provides-Extra: teleop
+Requires-Dist: pyzmq; extra == "teleop"
+Requires-Dist: msgpack; extra == "teleop"
+Requires-Dist: msgpack-numpy; extra == "teleop"
+Requires-Dist: pin; extra == "teleop"
+Requires-Dist: pyvista; platform_machine != "aarch64" and extra == "teleop"
+Provides-Extra: sim
+Requires-Dist: mujoco; extra == "sim"
+Requires-Dist: tyro; extra == "sim"
+Requires-Dist: pin; extra == "sim"
+Requires-Dist: pyyaml; extra == "sim"
+Requires-Dist: pyzmq; extra == "sim"
+Requires-Dist: msgpack; extra == "sim"
+Requires-Dist: msgpack-numpy; extra == "sim"
+Requires-Dist: opencv-python; extra == "sim"
+Provides-Extra: data-collection
+Requires-Dist: pyzmq; extra == "data-collection"
+Requires-Dist: msgpack; extra == "data-collection"
+Requires-Dist: msgpack-numpy; extra == "data-collection"
+Requires-Dist: pin; extra == "data-collection"
+Requires-Dist: tyro; extra == "data-collection"
+Requires-Dist: pyttsx3==2.90; extra == "data-collection"
+Requires-Dist: av>=14.2; extra == "data-collection"
+Requires-Dist: opencv-python; extra == "data-collection"
+Requires-Dist: lerobot @ git+https://github.com/huggingface/lerobot.git@a445d9c9da6bea99a8972daa4fe1fdd053d711d2 ; extra == "data-collection"
+Requires-Dist: datasets==3.6.0; extra == "data-collection"
+Provides-Extra: camera
+Requires-Dist: pyzmq; extra == "camera"
+Requires-Dist: msgpack; extra == "camera"
+Requires-Dist: msgpack-numpy; extra == "camera"
+Requires-Dist: opencv-python; extra == "camera"
+Requires-Dist: tyro; extra == "camera"
+Requires-Dist: depthai; extra == "camera"
+Requires-Dist: requests; extra == "camera"
+Provides-Extra: inference
+Requires-Dist: pyzmq; extra == "inference"
+Requires-Dist: msgpack; extra == "inference"
+Requires-Dist: msgpack-numpy; extra == "inference"
+Requires-Dist: pin; extra == "inference"
+Requires-Dist: tyro; extra == "inference"
+Requires-Dist: opencv-python; extra == "inference"
+Requires-Dist: scipy; extra == "inference"
+Requires-Dist: Isaac-GR00T @ git+https://github.com/NVIDIA/Isaac-GR00T.git ; extra == "inference"
+Provides-Extra: training
+Requires-Dist: hydra-core==1.3.2; extra == "training"
+Requires-Dist: wandb; extra == "training"
+Requires-Dist: trl==0.28.0; extra == "training"
+Requires-Dist: transformers>=4.56.2; extra == "training"
+Requires-Dist: accelerate>=1.3.0; extra == "training"
+Requires-Dist: tensorboard; extra == "training"
+Requires-Dist: smpl_sim @ git+https://github.com/ZhengyiLuo/SMPLSim.git ; extra == "training"
+
+NVIDIA Gear Sonic - Whole Body Control
