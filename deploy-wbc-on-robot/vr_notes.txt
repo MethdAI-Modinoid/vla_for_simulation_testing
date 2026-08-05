@@ -1,0 +1,71 @@
+
+./docker/run_docker.sh --root
+
+
+export GR00T_WBC_TMUX_SESSION=g1_deployment && \
+/root/venv/bin/python /root/Projects/deploy-wbc-on-robot/gr00t_wbc/control/main/teleop/run_g1_control_loop.py \
+  --wbc_version gear_wbc \
+  --wbc_model_path policy/GR00T-WholeBodyControl-Balance.onnx,policy/GR00T-WholeBodyControl-Walk.onnx \
+  --wbc_policy_class GIDecoupledWholeBodyPolicy \
+  --interface enp5s0 \
+  --simulator None \
+  --control_frequency 50 \
+  --no-enable_waist \
+  --with_hands \
+  --no-high_elbow_pose \
+  --no-enable_gravity_compensation
+
+
+
+
+  teleop
+
+
+/root/venv/bin/python /root/Projects/deploy-wbc-on-robot/gr00t_wbc/control/main/teleop/run_teleop_policy_loop.py \
+  --body_control_device pico \
+  --hand_control_device pico \
+  --body_streamer_ip 10.112.210.229 \
+  --body_streamer_keyword knee \
+  --no-enable_waist \
+  --no-high_elbow_pose \
+  --no-enable_visualization \
+  --enable_real_device \
+  --upper-body-joint-speed 50 \
+  --teleop-frequency 50 \
+  --control_frequency 50 \
+  --no-binary-hand-ik
+
+
+data collection 
+
+export GR00T_WBC_TMUX_SESSION=g1_data_export && \
+/root/venv/bin/python /root/Projects/deploy-wbc-on-robot/gr00t_wbc/control/main/teleop/run_g1_data_exporter.py \
+  --data_collection_frequency 20 \
+  --root_output_dir outputs \
+  --lower_body_policy gear_wbc \
+  --wbc_model_path "policy/GR00T-WholeBodyControl-Balance.onnx,policy/GR00T-WholeBodyControl-Walk.onnx" \
+  --camera_host 192.168.123.164 \
+  --camera_port 5555
+
+
+
+
+
+
+place the penguin in the beige basket ,the cube in the orange basket, and the blue octopus in the brown basket
+
+
+
+/root/venv/bin/python /root/Projects/deploy-wbc-on-robot/gr00t_wbc/control/main/teleop/run_g1_data_exporter.py
+
+
+python new_clinet.py  --connect tcp://192.168.123.164:5555 
+
+
+
+
+
+# smoother (more lag):
+python3 run_inference_smooth.py --smooth.ema-alpha 0.15 --smooth.max-delta-rad 0.04 --smooth.chunk-blend-steps 10
+# snappier (less smooth):
+python3 run_inference_smooth.py --smooth.ema-alpha 0.35 --smooth.max-delta-rad 0.10 --smooth.chunk-blend-steps 4
