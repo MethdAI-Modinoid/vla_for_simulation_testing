@@ -235,6 +235,10 @@ class TeleopConfig(BaseConfig):
     lerobot_replay_path: Optional[str] = None
     """Path to lerobot replay data."""
 
+    lerobot_replay_loop: bool = True
+    """Whether to replay the parquet on a loop. Pass --no-lerobot_replay_loop to play
+    it once and exit, which is what lets a caller replay several episodes in sequence."""
+
     # Override defaults for teleop-specific values
     body_streamer_ip: str = "10.110.67.24"
     """IP address for body streamer (vive only)."""

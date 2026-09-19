@@ -22,13 +22,24 @@ class LerobotReplayPolicy(Policy):
 
     is_active = True  # by default, the replay policy is active
 
-    def __init__(self, robot_model: RobotModel, parquet_path: str, use_viz: bool = False):
+    def __init__(
+        self,
+        robot_model: RobotModel,
+        parquet_path: str,
+        use_viz: bool = False,
+        loop: bool = True,
+    ):
         # self.dataset = LerobotDataset(dataset_path)
         self.parquet_path = parquet_path
         self._ctr = 0
         # read the parquet file
         self.df = pd.read_parquet(self.parquet_path)
         self._max_ctr = len(self.df)
+        # loop=True (default) rewinds forever, so the caller stops with Ctrl+C.
+        # loop=False plays the episode once and then reports is_finished(), which
+        # is what lets a caller replay a whole dataset episode by episode.
+        self._loop = loop
+        self._finished = False
         # get the action from the dataframe
         self.action = self.df.iloc[self._ctr]["action"]
         self.use_viz = use_viz
@@ -57,7 +68,13 @@ class LerobotReplayPolicy(Policy):
 
         self._ctr += 1
         if self._ctr >= self._max_ctr:
-            self._ctr = 0
+            if self._loop:
+                self._ctr = 0
+            else:
+                # Hold on the final frame so get_observation() stays in range;
+                # the caller is expected to stop once is_finished() goes True.
+                self._ctr = self._max_ctr - 1
+                self._finished = True
         # print(f"Replay {self._ctr} / {self._max_ctr}")
         if self.use_viz:
             self.viz.plot_tensors(
@@ -83,6 +100,10 @@ class LerobotReplayPolicy(Policy):
             "base_height_cmd": base_height_cmd,
             "timestamp": time.time(),
         }
+
+    def is_finished(self) -> bool:
+        """True once a non-looping replay has emitted every frame of the episode."""
+        return self._finished
 
     def action_to_cmd(self, action: dict[str, any]) -> dict[str, any]:
         action["target_upper_body_pose"] = action["q"][

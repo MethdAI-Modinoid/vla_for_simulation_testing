@@ -471,6 +471,77 @@ Operations on the Pico controllers:
 
 ---
 
+## B5. Replaying a recorded dataset on the robot
+
+> ⚠️ **This moves the real robot.** Clear the workspace and keep the e-stop in
+> hand. Each episode ramps to its own start pose over ~2 s, and consecutive
+> episodes can start from quite different poses.
+
+### Where the data lives
+
+`run_g1_data_exporter.py` writes a LeRobot dataset to
+`outputs/<timestamp>-G1-<robot_id>/`:
+
+```
+outputs/2026-09-19-10-39-50-G1-sim/
+├── data/chunk-000/episode_000000.parquet   # one parquet per episode
+├── meta/                                   # info.json, episodes.jsonl, tasks.jsonl, …
+└── videos/
+```
+
+The same directory is reachable by two paths, because the repo is bind-mounted
+into the deploy container:
+
+| Where | Path |
+|---|---|
+| Host | `/mnt/drive2/vla_sim_ws/deploy-wbc-on-robot/outputs/2026-09-19-10-39-50-G1-sim` |
+| Container | `/root/Projects/deploy-wbc-on-robot/outputs/2026-09-19-10-39-50-G1-sim` |
+
+### Setting the dataset path
+
+`replay_data/run_episode.sh` holds the dataset it replays in one constant near
+the top — use the **container** path:
+
+```bash
+DATASET="${DATASET:-$DEP/outputs/2026-09-19-10-39-50-G1-sim}"
+```
+
+Either edit that line, or override it per run without editing the script:
+
+```bash
+DATASET=/root/Projects/deploy-wbc-on-robot/outputs/<other-dataset> \
+  bash replay_data/run_episode.sh all
+```
+
+### Replaying
+
+Run **inside the deploy container** (`docker exec -it gr00t_wbc-bash-root bash`):
+
+```bash
+# every episode in $DATASET, in order
+bash /root/Projects/deploy-wbc-on-robot/replay_data/run_episode.sh all
+
+# a single episode
+bash replay_data/run_episode.sh smooth            # bundled smooth_v2_ep0.parquet
+bash replay_data/run_episode.sh raw               # bundled raw_ep0.parquet
+bash replay_data/run_episode.sh /path/to/ep.parquet
+```
+
+| Mode | Behaviour |
+|---|---|
+| `all` | Confirms `GO` once, then replays every episode in order. Prints `[N/40] next: …` and waits for **Enter** before each next episode. |
+| `smooth` / `raw` / a parquet path | Replays that one episode **on a loop** until `Ctrl+C`. |
+
+The script starts the WBC controller if one isn't already running on `enp5s0`,
+reuses that single controller across all episodes, and shuts it down on exit.
+`Ctrl+C` aborts at any point.
+
+> `all` mode passes `--no-lerobot_replay_loop` to `run_teleop_policy_loop.py`, so
+> each episode plays once and exits instead of rewinding. Without that flag the
+> replay never ends, which is why the single-episode modes loop until `Ctrl+C`.
+
+---
+
 ## 10. Running sim + WBC together
 
 The typical simulation session is three terminals:

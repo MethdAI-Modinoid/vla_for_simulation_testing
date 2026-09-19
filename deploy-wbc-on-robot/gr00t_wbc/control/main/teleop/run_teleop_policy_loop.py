@@ -35,7 +35,9 @@ def main(config: TeleopConfig):
 
     if config.lerobot_replay_path:
         teleop_policy = LerobotReplayPolicy(
-            robot_model=robot_model, parquet_path=config.lerobot_replay_path
+            robot_model=robot_model,
+            parquet_path=config.lerobot_replay_path,
+            loop=config.lerobot_replay_loop,
         )
     else:
         print("running teleop policy, waiting teleop policy to be initialized...")
@@ -94,6 +96,12 @@ def main(config: TeleopConfig):
                     print(f"Moving to initial pose for {time_to_get_to_initial_pose} seconds")
                     time.sleep(time_to_get_to_initial_pose)
                 iteration += 1
+
+                # A non-looping replay ends the run; the teleop path has no
+                # is_finished() and so never stops here.
+                if getattr(teleop_policy, "is_finished", lambda: False)():
+                    print("Replay finished.")
+                    break
             end_time = time.monotonic()
             if (end_time - t_start) > (1 / config.teleop_frequency):
                 telemetry.log_timing_info(context="Teleop Policy Loop Missed", threshold=0.001)
