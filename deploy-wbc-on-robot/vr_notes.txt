@@ -7,7 +7,7 @@ export GR00T_WBC_TMUX_SESSION=g1_deployment && \
   --wbc_version gear_wbc \
   --wbc_model_path policy/GR00T-WholeBodyControl-Balance.onnx,policy/GR00T-WholeBodyControl-Walk.onnx \
   --wbc_policy_class GIDecoupledWholeBodyPolicy \
-  --interface enp5s0 \
+  --interface lo \
   --simulator None \
   --control_frequency 50 \
   --no-enable_waist \
@@ -38,13 +38,13 @@ export GR00T_WBC_TMUX_SESSION=g1_deployment && \
 
 data collection 
 
-export GR00T_WBC_TMUX_SESSION=g1_data_export && \
-/root/venv/bin/python /root/Projects/deploy-wbc-on-robot/gr00t_wbc/control/main/teleop/run_g1_data_exporter.py \
+
+   python gr00t_wbc/control/main/teleop/run_g1_data_exporter.py \
   --data_collection_frequency 20 \
   --root_output_dir outputs \
   --lower_body_policy gear_wbc \
   --wbc_model_path "policy/GR00T-WholeBodyControl-Balance.onnx,policy/GR00T-WholeBodyControl-Walk.onnx" \
-  --camera_host 192.168.123.164 \
+  --camera_host localhost \
   --camera_port 5555
 
 

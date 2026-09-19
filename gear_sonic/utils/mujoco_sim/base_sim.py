@@ -658,6 +658,36 @@ class DefaultEnv:
         mujoco.mj_resetData(self.mj_model, self.mj_data)
 
 
+class PnPCubeBasketEnv(DefaultEnv):
+    """Single-object pick and place: one cube and one basket on the table.
+
+    A pared-down version of the default scene, which is a three-cube/three-basket
+    sorting task. The cube keeps a fixed start position: randomize_cubes() needs
+    all three of cube_red_free/cube_green_free/cube_blue_free and no-ops here.
+    """
+
+    def __init__(
+        self,
+        config: Dict[str, any],
+        onscreen: bool = False,
+        offscreen: bool = False,
+        enable_image_publish: bool = False,
+    ):
+        # Override the robot scene (copy so the caller's config is untouched).
+        config = config.copy()
+        config["ROBOT_SCENE"] = "gear_sonic/data/robot_model/model_data/g1/pnp_cube_basket_43dof.xml"
+        # Empty camera_configs so DefaultEnv supplies the standard
+        # ego_view/ego_left/ego_right feeds the data pipeline expects.
+        super().__init__(config, "pnp_cube_basket", {}, onscreen, offscreen, enable_image_publish)
+
+    def get_privileged_obs(self):
+        return {
+            "cube_pos": self.mj_data.xpos[self.mj_model.body("cube").id],
+            "cube_quat": self.mj_data.xquat[self.mj_model.body("cube").id],
+            "basket_pos": self.mj_data.xpos[self.mj_model.body("basket").id],
+        }
+
+
 class BaseSimulator:
     """Base simulator class that handles initialization and running of simulations"""
 
@@ -684,10 +714,12 @@ class BaseSimulator:
         # Create the environment
         if env_name == "default":
             self.sim_env = DefaultEnv(config, env_name, **kwargs)
+        elif env_name == "pnp_cube_basket":
+            self.sim_env = PnPCubeBasketEnv(config, **kwargs)
         else:
             raise ValueError(
                 f"Invalid environment name: {env_name}. "
-                f"Only 'default' is supported in this minimal build."
+                f"Supported environments: 'default', 'pnp_cube_basket'."
             )
 
         try:

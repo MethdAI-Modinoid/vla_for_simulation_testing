@@ -47,3 +47,15 @@ pico_manager_thread_server.py  run_camera_viewer.py  run_vla_inference.py
     --enable-image-publish \
     --camera-port 5555 \
     --env-name default
+
+
+
+
+
+
+
+python run_sim_loop.py \
+    --enable-offscreen \
+    --enable-image-publish \
+    --camera-port 5555 \
+    --env-name pnp_cube_basket

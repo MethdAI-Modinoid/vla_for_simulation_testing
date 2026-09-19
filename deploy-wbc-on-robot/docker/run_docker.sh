@@ -45,7 +45,7 @@ REMOTE_IMAGE="nvgear/${PROJECT_SLUG}:latest"
 
 # Fixed project directory to use when --root is passed
 # (overrides git-based auto-detection so the correct codebase is always mounted)
-ROOT_PROJECT_DIR="/mnt/drive2/vr/deploy-wbc-on-robot"
+ROOT_PROJECT_DIR="/mnt/drive2/vla_sim_ws/deploy-wbc-on-robot"
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
